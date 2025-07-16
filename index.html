@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="de" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TransFair Campus – Interaktive Projektvorstellung</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Modern Professional (Soft Blues, Warm Greys, Subtle Accents) -->
+    <!-- Application Structure Plan: Die Anwendung ist als thematische One-Page-Website aufgebaut, um eine narrative User Journey zu schaffen. Sie beginnt mit einem Hero-Banner (Vision), definiert das Problem (Herausforderung), präsentiert die interaktive Lösung (Ökosystem), zeigt den Mehrwert für Stakeholder, visualisiert den Zeitplan und die Erfolgsmetriken und endet mit den Partnern. Diese Struktur wurde gewählt, um komplexe Informationen logisch zu gruppieren und den Nutzer schrittweise vom "Warum" zum "Wie" und "Was" zu führen, was die Verständlichkeit und das Engagement gegenüber einer linearen Folienpräsentation erhöht. Interaktive Karten und ein dynamisches Diagramm fördern die aktive Auseinandersetzung mit den Inhalten. Ein neuer Abschnitt mit Referenzzitaten von Studierenden, Unternehmen und Partnern wurde hinzugefügt, um den Erfolg des Projekts durch authentische Stimmen zu untermauern. Die Reihenfolge der Abschnitte wurde angepasst, sodass "Stimmen zum TransFair Campus" nun nach "Mehrwert" erscheint. Ein neuer Abschnitt für eine "Pressemitteilung" wurde hinzugefügt, der modalen Dialog öffnet, um den Zeitungsartikel anzuzeigen. -->
+    <!-- Visualization & Content Choices:
+        - Herausforderung: Informieren -> HTML/CSS mit Icons (Unicode) -> Klare, schnelle Vermittlung der Kernprobleme.
+        - TransFair-Ansatz: Organisieren/Erklären -> Interaktive Karten (HTML/CSS/JS) mit Emojis, wieder in einfacher Grid-Anordnung -> Klick zum Einblenden von Details -> Fördert die Erkundung der einzelnen Maßnahmen, ohne die Übersichtlichkeit zu beeinträchtigen.
+        - Dynamische Erfolgszahlen: Informieren/Überzeugen -> Animierte Zähler (HTML/CSS/JS) -> Scroll-Triggered Animation -> Visuell beeindruckende Darstellung des Projekt-Impacts.
+        - Stimmen zum TransFair Campus: Informieren/Überzeugen -> Zitat-Karten (HTML/CSS) -> Keine Interaktion -> Bietet authentische Referenzen und Erfolgsgeschichten von Beteiligten.
+        - Mehrwert: Vergleichen/Informieren -> 3-Spalten-Layout mit Icons (Unicode) -> Hover-Effekte -> Schneller visueller Vergleich der Vorteile für verschiedene Gruppen.
+        - Zeitplan: Veränderung zeigen -> Visuelle Timeline (HTML/CSS) mit verbesserter Darstellung -> Keine Interaktion -> Intuitive Darstellung des 24-monatigen Prozesses.
+        - Erfolgskriterien: Messen/Vergleichen -> Bar-Chart (Chart.js/Canvas) -> Tooltips/Filter-Buttons -> Dynamische, klare Darstellung von quantitativen Zielen und deren potenzieller Erreichung.
+        - Partner: Informieren -> Text-basiertes Layout -> Keine Interaktion -> Professionelle und klare Darstellung der Projektbeteiligten.
+        - Pressemitteilung (Modal): Anzeigen von Text -> Button zum Öffnen eines Modals (HTML/CSS/JS) -> Klick zum Öffnen/Schließen -> Präsentiert den Zeitungsartikel in einem überlagernden Fenster für fokussierte Ansicht.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        /* Mobile-First Approach: Base styles are for mobile, then overridden for larger screens */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F9FA; /* Very light grey, almost white */
+            color: #343A40; /* Dark grey for text */
+        }
+        .bg-primary { background-color: #F8F9FA; }
+        .bg-secondary { background-color: #FFFFFF; }
+        .bg-accent { background-color: #2C3E50; } /* Dark navy blue */
+        .text-accent { color: #2C3E50; }
+        .border-accent { border-color: #2C3E50; }
+        .btn-primary {
+            background-color: #3498DB; /* Light blue */
+            color: #FFFFFF;
+            transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary:hover {
+            background-color: #217DBB; /* Darker blue on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        /* Styles for nav links inside the slide-out overlay */
+        .nav-link-overlay {
+            display: block;
+            padding: 1rem 0;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #FFFFFF;
+            transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+        }
+        .nav-link-overlay:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #B3E0F2; /* Lighter blue for hover */
+        }
+        .nav-link-overlay.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #85CCF2; /* Even lighter blue for active */
+        }
+
+        .card {
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            border-radius: 0.75rem; /* Rounded corners */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #3498DB; /* Spinner color */
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        textarea, input[type="text"] {
+            border-radius: 0.5rem;
+            border: 1px solid #CED4DA; /* Light grey for input border */
+            padding: 0.75rem;
+            transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        textarea:focus, input[type="text"]:focus {
+            border-color: #3498DB;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25);
+            outline: none;
+        }
+
+        /* Modal specific styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+        .modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: #FFFFFF;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            transform: scale(0.95);
+            transition: transform 0.3s ease-in-out;
+        }
+        .modal-overlay.open .modal-content {
+            transform: scale(1);
+        }
+        .modal-close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6C757D;
+            transition: color 0.2s ease-in-out;
+        }
+        .modal-close-button:hover {
+            color: #343A40;
+        }
+
+        /* Styles for the newspaper content within the modal */
+        .newspaper-modal-content .masthead {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem; /* Adjusted for modal */
+            font-weight: 700;
+            text-align: center;
+            color: #222;
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            line-height: 1;
+        }
+        .newspaper-modal-content .dateline {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #777;
+            margin-bottom: 1rem;
+            border-bottom: 1px dashed #eee;
+            padding-bottom: 0.5rem;
+        }
+        .newspaper-modal-content .article-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 0.8rem;
+            color: #003366;
+        }
+        .newspaper-modal-content .article-subtitle {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 1rem;
+        }
+        .newspaper-modal-content .lead-paragraph {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #444;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #003366;
+            padding-left: 0.8rem;
+        }
+        .newspaper-modal-content .article-body {
+            column-count: 1; /* Always single column within modal */
+            text-align: justify;
+        }
+        .newspaper-modal-content .article-body h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-top: 1rem;
+            margin-bottom: 0.8rem;
+            color: #003366;
+        }
+        .newspaper-modal-content .article-body ul {
+            list-style: disc;
+            margin-left: 1.2rem;
+            margin-bottom: 1rem;
+        }
+        .newspaper-modal-content .article-body li {
+            margin-bottom: 0.4rem;
+        }
+        .newspaper-modal-content .quote {
+            font-style: italic;
+            border-left: 3px solid #ccc;
+            padding-left: 1rem;
+            margin: 1rem 0;
+            color: #555;
+        }
+
+        /* Hero section background animation */
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        #hero {
+            background: linear-gradient(135deg, #E0F2F7, #B3E0F2, #85CCF2); /* Lighter blues for subtle effect */
+            background-size: 200% 200%; /* Make gradient larger than container for movement */
+            animation: gradientShift 15s ease infinite;
+        }
+
+        /* Ecosystem grid layout - already mobile-first */
+        .ecosystem-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 2rem;
+            justify-items: center;
+            align-items: center;
+        }
+
+        @media (min-width: 768px) {
+            .ecosystem-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .ecosystem-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Dynamic counter styles */
+        .impact-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #3498DB; /* Accent blue */
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            display: block; /* Ensure it takes its own line */
+        }
+        .impact-label {
+            font-size: 1.1rem;
+            color: #555;
+            font-weight: 500;
+        }
+
+        /* Slide-out Navigation Drawer (the actual menu drawer) */
+        .slide-out-nav-drawer {
+            position: fixed;
+            top: 0;
+            right: 0; /* Start from the right */
+            width: 300px; /* Fixed width for the slide-out menu */
+            max-width: 80%; /* Max width for smaller screens */
+            height: 100%;
+            background-color: #2C3E50; /* Dark blue background for the drawer itself */
+            z-index: 900; /* Above main content, below modal */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transform: translateX(100%); /* Start off-screen to the right */
+            transition: transform 0.4s ease-in-out;
+        }
+
+        .slide-out-nav-drawer.open {
+            transform: translateX(0); /* Slide into view */
+        }
+
+        .slide-out-nav-drawer .close-btn {
+            position: absolute;
+            top: 1.5rem;
+            left: 2rem; /* Position close button on the left inside the drawer */
+            font-size: 2.5rem;
+            color: #FFFFFF;
+            cursor: pointer;
+            z-index: 901; /* Ensure close button is clickable */
+        }
+
+        /* Backdrop overlay for dimming and blur */
+        .backdrop-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black for dimming */
+            z-index: 899; /* Below the drawer, above main content */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease-in-out, visibility 0.4s ease-in-out;
+        }
+
+        .backdrop-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Apply blur to main content when menu is open */
+        body.menu-open main {
+            filter: blur(5px); /* Blur main content */
+            pointer-events: none; /* Disable interaction with blurred content */
+            transition: filter 0.4s ease-in-out;
+        }
+        body.menu-open {
+            overflow: hidden; /* Prevent scrolling of main content */
+        }
+
+        /* Adjust header for larger screens to hide hamburger menu */
+        @media (min-width: 768px) {
+            #hamburger-menu-button {
+                display: none;
+            }
+            .slide-out-nav-drawer, .backdrop-overlay {
+                display: none; /* Hide slide-out menu and backdrop on larger screens */
+            }
+        }
+        /* Adjusted section padding for mobile-first */
+        section {
+            padding-top: 3rem; /* Default top padding for mobile (py-12) */
+            padding-bottom: 3rem; /* Default bottom padding for mobile (py-12) */
+        }
+        /* Override for medium screens and up */
+        @media (min-width: 768px) {
+            section {
+                padding-top: 5rem; /* py-20 */
+                padding-bottom: 5rem; /* py-20 */
+            }
+        }
+        /* Adjust hero section padding for mobile-first */
+        #hero {
+            padding-top: 4rem; /* py-16 */
+            padding-bottom: 4rem; /* py-16 */
+        }
+        /* Override for medium screens and up */
+        @media (min-width: 768px) {
+            #hero {
+                padding-top: 8rem; /* py-32 */
+                padding-bottom: 8rem; /* py-32 */
+            }
+        }
+    </style>
+</head>
+<body class="bg-primary">
+
+    <header class="bg-secondary/90 backdrop-blur-sm sticky top-0 z-50 shadow-md">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-3xl font-bold text-accent">TransFair Campus</a>
+            <button id="hamburger-menu-button" class="p-2 rounded-md text-gray-600 hover:text-accent hover:bg-gray-100">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Backdrop Overlay for Slide-out Menu -->
+    <div id="backdrop-overlay" class="backdrop-overlay"></div>
+
+    <!-- Slide-out Navigation Drawer -->
+    <div id="slide-out-nav-drawer" class="slide-out-nav-drawer">
+        <button id="close-nav-drawer-btn" class="close-btn">&times;</button>
+        <div class="flex flex-col space-y-4">
+            <a href="#challenge" class="nav-link-overlay">Herausforderung</a>
+            <a href="#solution" class="nav-link-overlay">Lösung</a>
+            <a href="#impact-numbers" class="nav-link-overlay">Erfolg in Zahlen</a>
+            <a href="#value" class="nav-link-overlay">Mehrwert</a>
+            <a href="#testimonials" class="nav-link-overlay">Stimmen</a>
+            <a href="#roadmap" class="nav-link-overlay">Roadmap</a>
+            <a href="#partners" class="nav-link-overlay">Partner</a>
+            <a href="#press-release" class="nav-link-overlay">Pressemitteilung</a>
+        </div>
+    </div>
+
+    <main>
+        <section id="hero" class="container mx-auto px-6 text-center">
+            <h1 class="text-4xl md:text-6xl font-bold text-accent mb-4 leading-tight">Brücken bauen für IT-Talente.</h1>
+            <p class="text-lg md:text-xl max-w-3xl mx-auto text-gray-600 mb-8">
+                Unsere Vision mit TransFair Campus: Wir schaffen eine systematische Verbindung zwischen internationalen Studierenden und dem deutschen Arbeitsmarkt, um ihre Karrierechancen nachhaltig zu stärken.
+            </p>
+            <a href="#challenge" class="inline-block btn-primary font-semibold py-3 px-8 rounded-full">Erfahren Sie mehr</a>
+        </section>
+
+        <!-- Section: Herausforderung -->
+        <section id="challenge" class="bg-secondary">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-accent mb-4">Die Herausforderung: Ein ungenutztes Potenzial</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-gray-600 text-lg">Trotz hoher Nachfrage bleiben viele internationale Talente nach dem Studium unentdeckt. Wir adressieren die Kernprobleme, die einer erfolgreichen Integration im Wege stehen.</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="bg-primary p-8 rounded-lg text-center card">
+                        <span class="text-5xl mb-4 block">📉</span>
+                        <h3 class="font-bold text-xl mt-4 mb-2 text-accent">Fachkräftemangel</h3>
+                        <p class="text-gray-600">Deutschland braucht dringend IT-Spezialisten, um wettbewerbsfähig zu bleiben.</p>
+                    </div>
+                    <div class="bg-primary p-8 rounded-lg text-center card">
+                        <span class="text-5xl mb-4 block">🔗</span>
+                        <h3 class="font-bold text-xl mt-4 mb-2 text-accent">Fehlende Brücken</h3>
+                        <p class="text-gray-600">Es mangelt an Praxisbezug und Netzwerken zu deutschen Unternehmen.</p>
+                    </div>
+                    <div class="bg-primary p-8 rounded-lg text-center card">
+                         <span class="text-5xl mb-4 block">🎓</span>
+                        <h3 class="font-bold text-xl mt-4 mb-2 text-accent">Ungenutztes Potenzial</h3>
+                        <p class="text-gray-600">Hochqualifizierte Studierende finden oft keinen passenden Jobeinstieg.</p>
+                    </div>
+                    <div class="bg-primary p-8 rounded-lg text-center card">
+                        <span class="text-5xl mb-4 block">✈️</span>
+                        <h3 class="font-bold text-xl mt-4 mb-2 text-accent">Abwanderung</h3>
+                        <p class="text-gray-600">Wertvolle Talente verlassen Deutschland nach ihrem Abschluss wieder.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Lösung -->
+        <section id="solution" class="bg-primary">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-accent mb-4">Unser Ansatz: Das TransFair Campus Ökosystem</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-gray-600 text-lg">TransFair Campus ist mehr als ein Programm – es ist ein praxisorientiertes Ökosystem, das Studierende und Unternehmen zusammenbringt. Klicken Sie auf die einzelnen Bausteine, um mehr zu erfahren.</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="solution-card bg-secondary rounded-lg p-8 cursor-pointer border-l-4 border-blue-400 hover:border-blue-600 card">
+                        <span class="text-5xl mb-4 block">🤝</span>
+                        <h3 class="font-bold text-xl mb-2 text-accent">Mentoring & Praxisformate</h3>
+                        <p class="text-gray-600">Reale Fallstudien und Einblicke in die deutsche Arbeitskultur.</p>
+                        <div class="solution-details hidden mt-4 text-gray-700">
+                            <p>Vertreter:innen aus der Wirtschaft bringen monatlich reale Aufgabenstellungen ein und vermitteln wertvolle Einblicke in Unternehmensprozesse und die spezifischen Bedarfe des deutschen Marktes.</p>
+                        </div>
+                    </div>
+                    <div class="solution-card bg-secondary rounded-lg p-8 cursor-pointer border-l-4 border-blue-400 hover:border-blue-600 card">
+                        <span class="text-5xl mb-4 block">🧑‍🤝‍🧑</span>
+                        <h3 class="font-bold text-xl mb-2 text-accent">Peer-Mentoring</h3>
+                        <p class="text-gray-600">Erfahrene Studierende fördern Neuankömmlinge und Leadership-Skills.</p>
+                        <div class="solution-details hidden mt-4 text-gray-700">
+                           <p>Durch den Aufbau von Hierarchien und Peer-Strukturen übernehmen erfahrenere Studierende Verantwortung, leiten Kleingruppen und geben ihr Wissen weiter. Das fördert den Wissenstransfer und soziale Kompetenzen.</p>
+                        </div>
+                    </div>
+                    <div class="solution-card bg-secondary rounded-lg p-8 cursor-pointer border-l-4 border-blue-400 hover:border-blue-600 card">
+                        <span class="text-5xl mb-4 block">💡</span>
+                        <h3 class="font-bold text-xl mb-2 text-accent">Mini-Projekte & Challenges</h3>
+                        <p class="text-gray-600">Relevante Praxisprojekte von Unternehmen für studentische Teams.</p>
+                        <div class="solution-details hidden mt-4 text-gray-700">
+                            <p>Unternehmen bringen konkrete Projekte aus Fachbereichen wie Data Science, Cybersecurity oder KI ein. Die Bearbeitung im Team stärkt fachliche und kollaborative Fähigkeiten und schafft ein sichtbares Portfolio.</p>
+                        </div>
+                    </div>
+                    <div class="solution-card bg-secondary rounded-lg p-8 cursor-pointer border-l-4 border-blue-400 hover:border-blue-600 card">
+                        <span class="text-5xl mb-4 block">🗣️</span>
+                        <h3 class="font-bold text-xl mb-2 text-accent">Präsentationsformate</h3>
+                        <p class="text-gray-600">Stärkung von Kommunikations- und Präsentationsfähigkeiten.</p>
+                         <div class="solution-details hidden mt-4 text-gray-700">
+                            <p>Studierende präsentieren regelmäßig zu aktuellen IT-Themen vor Peers und Unternehmensvertretern. Dies trainiert entscheidende Soft Skills und erhöht die persönliche Sichtbarkeit.</p>
+                        </div>
+                    </div>
+                    <div class="solution-card bg-secondary rounded-lg p-8 cursor-pointer border-l-4 border-blue-400 hover:border-blue-600 card">
+                        <span class="text-5xl mb-4 block">🌐</span>
+                        <h3 class="font-bold text-xl mb-2 text-accent">Digitale Präsenz</h3>
+                        <p class="text-gray-600">Ein gemeinsames digitales Portfolio für maximale Sichtbarkeit.</p>
+                        <div class="solution-details hidden mt-4 text-gray-700">
+                           <p>Der Aufbau einer gemeinsamen LinkedIn-Präsenz dient als dynamisches Portfolio. Hier werden Projekte, Rollen und Veröffentlichungen dokumentiert, was die professionelle Vernetzung erleichtert.</p>
+                        </div>
+                    </div>
+                     <div class="solution-card bg-secondary rounded-lg p-8 cursor-pointer border-l-4 border-blue-400 hover:border-blue-600 card">
+                        <span class="text-5xl mb-4 block">💼</span>
+                        <h3 class="font-bold text-xl mb-2 text-accent">Studentische Beratung</h3>
+                        <p class="text-gray-600">Die Zukunft: Fachliche Unterstützung für die regionale Wirtschaft.</p>
+                        <div class="solution-details hidden mt-4 text-gray-700">
+                            <p>Perspektivisch entwickelt sich aus dem Projekt eine studentische Unternehmensberatung. Diese unterstützt Unternehmen aus der Region fachlich und macht den hochqualifizierten Talentpool noch sichtbarer.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Erfolg in Zahlen -->
+        <section id="impact-numbers" class="bg-secondary">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-accent mb-4">Unser Erfolg in Zahlen</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-gray-600 text-lg">Ein Blick auf die beeindruckenden Ergebnisse von TransFair Campus.</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8 text-center">
+                    <div class="bg-primary p-8 rounded-lg shadow-md card">
+                        <span class="impact-number" data-target="180">0</span>
+                        <p class="impact-label">Vermittelte Studierende</p>
+                    </div>
+                    <div class="bg-primary p-8 rounded-lg shadow-md card">
+                        <span class="impact-number" data-target="25">0</span>
+                        <p class="impact-label">Partnerunternehmen</p>
+                    </div>
+                    <div class="bg-primary p-8 rounded-lg shadow-md card">
+                        <span class="impact-number" data-target="40">0</span>
+                        <p class="impact-label">Abgeschlossene Projekte</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Mehrwert -->
+        <section id="value" class="bg-primary">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-accent mb-4">Der Mehrwert von TransFair Campus</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-gray-600 text-lg">Unser Projekt schafft eine Win-Win-Win-Situation für alle Beteiligten und stärkt den Wirtschaftsstandort Deutschland nachhaltig.</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8 text-center">
+                    <div class="card p-8 bg-secondary">
+                        <div class="text-5xl text-blue-500 mb-4">🇩🇪</div>
+                        <h3 class="font-bold text-xl mb-2 text-accent">Für Deutschland</h3>
+                        <p class="text-gray-600">Nachhaltige Integration von Fachkräften und Stärkung der Attraktivität des Standorts für internationale MINT-Talente.</p>
+                    </div>
+                    <div class="card p-8 bg-secondary">
+                        <div class="text-5xl text-blue-500 mb-4">🏢</div>
+                        <h3 class="font-bold text-xl mb-2 text-accent">Für Unternehmen</h3>
+                        <p class="text-gray-600">Direkter Zugang zu hochmotivierten Nachwuchskräften mit frischen, internationalen Perspektiven und neuen Ideen.</p>
+                    </div>
+                    <div class="card p-8 bg-secondary">
+                        <div class="text-5xl text-blue-500 mb-4">👩‍🎓</div>
+                        <h3 class="font-bold text-xl mb-2 text-accent">Für Studierende</h3>
+                        <p class="text-gray-600">Wertvolle Praxiserfahrung, Aufbau eines beruflichen Netzwerks und exzellente Karrierechancen in Deutschland.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Stimmen zum TransFair Campus -->
+        <section id="testimonials" class="bg-secondary">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-accent mb-4">Stimmen zum TransFair Campus</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-gray-600 text-lg">Hören Sie, was Studierende, Unternehmen und Partner über den Erfolg und die Wirkung von TransFair Campus sagen.</p>
+                </div>
+                <div class="grid md:grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-primary p-8 rounded-lg shadow-md card">
+                        <p class="text-lg italic text-gray-700 mb-4">"TransFair Campus war der Schlüssel zu meinem Erfolg in Deutschland. Die praktischen Projekte und das Mentoring haben mir nicht nur geholfen, meine Fähigkeiten zu verbessern, sondern auch das Vertrauen gegeben, mich auf dem deutschen Arbeitsmarkt zu bewerben. Ich habe meinen Traumjob gefunden!"</p>
+                        <p class="font-semibold text-accent">– Anya Singh, Absolventin, Softwareentwicklerin bei TechMuster GmbH</p>
+                    </div>
+                    <div class="bg-primary p-8 rounded-lg shadow-md card">
+                        <p class="text-lg italic text-gray-700 mb-4">"Die Zusammenarbeit mit TransFair Campus hat uns Zugang zu einem Pool von hochmotivierten und hervorragend ausgebildeten internationalen Talenten verschafft. Die Studierenden bringen frische Perspektiven und wertvolles Know-how mit, das unsere Innovationskraft maßgeblich fördert. Eine echte Bereicherung für unser Unternehmen!"</p>
+                        <p class="font-semibold text-accent">– Dr. Lena Muster, Head of Innovation, GlobalMuster AG</p>
+                    </div>
+                    <div class="bg-primary p-8 rounded-lg shadow-md card">
+                        <p class="text-lg italic text-gray-700 mb-4">"Als wissenschaftlicher Begleiter sind wir beeindruckt von der Effektivität von TransFair Campus. Das Projekt liefert nicht nur exzellente Ergebnisse bei der Integration von Fachkräften, sondern dient auch als wegweisendes Modell für die gesamte deutsche Bildungs- und Wirtschaftslandschaft. Ein wichtiger Beitrag zur Fachkräftesicherung."</p>
+                        <p class="font-semibold text-accent">– Prof. Dr. Max Mustermann, Senior Researcher, IX</p>
+                    </div>
+                    <div class="bg-primary p-8 rounded-lg shadow-md card">
+                        <p class="text-lg italic text-gray-700 mb-4">"Die Möglichkeit, reale Unternehmensprojekte zu bearbeiten, war für mich unbezahlbar. Es hat mir geholfen, meine theoretischen Kenntnisse in die Praxis umzusetzen und wertvolle Kontakte zu knüpfen. TransFair Campus hat meine Erwartungen übertroffen und mir den Start in Deutschland enorm erleichtert."</p>
+                        <p class="font-semibold text-accent">– Chen Wei, Student, Praktikant bei DataVision Musterfirma</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="roadmap" class="bg-primary">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-accent mb-4">Roadmap & Erfolgskriterien</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-gray-600 text-lg">Wir verfolgen einen klaren Plan für die 24-monatige Pilotphase und messen unseren Erfolg an transparenten Kriterien.</p>
+                </div>
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h3 class="font-bold text-2xl mb-6 text-center text-accent">Projekt-Timeline (24 Monate)</h3>
+                        <div class="relative pl-8">
+                            <div class="absolute left-0 h-full w-0.5 bg-blue-300"></div>
+                            <div class="relative mb-8">
+                                <div class="absolute -left-[38px] top-1 w-6 h-6 bg-blue-500 rounded-full border-4 border-primary flex items-center justify-center text-white font-bold text-sm">1</div>
+                                <h4 class="font-bold text-lg text-accent">Phase 1 (Monat 1-6): Aufbau</h4>
+                                <p class="text-gray-700">Partnerakquise, Aufbau der Peer-Strukturen, erstes Kick-off-Event.</p>
+                            </div>
+                            <div class="relative mb-8">
+                               <div class="absolute -left-[38px] top-1 w-6 h-6 bg-blue-500 rounded-full border-4 border-primary flex items-center justify-center text-white font-bold text-sm">2</div>
+                                <h4 class="font-bold text-lg text-accent">Phase 2 (Monat 7-20): Durchführung</h4>
+                                <p class="text-gray-700">Regelmäßige Mentoring-Events, Start der Praxisprojekte, Aufbau der digitalen Präsenz.</p>
+                            </div>
+                            <div class="relative">
+                               <div class="absolute -left-[38px] top-1 w-6 h-6 bg-blue-500 rounded-full border-4 border-primary flex items-center justify-center text-white font-bold text-sm">3</div>
+                                <h4 class="font-bold text-lg text-accent">Phase 3 (Monat 21-24): Evaluation & Skalierung</h4>
+                                <p class="text-gray-700">Analyse der Ergebnisse, Dokumentation der Übergänge, Planung der Skalierung.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                         <h3 class="font-bold text-2xl mb-6 text-center text-accent">Erfolgs-Dashboard</h3>
+                         <div class="bg-primary p-6 rounded-lg shadow-md">
+                            <div class="chart-container">
+                                <canvas id="successChart"></canvas>
+                            </div>
+                            <div class="mt-6 text-center">
+                                <button id="btnParticipants" class="btn-chart-filter active bg-blue-100 text-blue-700 font-medium py-2 px-4 rounded-full text-sm mr-2 transition-colors duration-200">Teilnehmende</button>
+                                <button id="btnProjects" class="btn-chart-filter bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-full text-sm transition-colors duration-200">Projekte</button>
+                            </div>
+                         </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="partners" class="bg-secondary">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-accent mb-4">Starke Partner für ein starkes Projekt</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-gray-600 text-lg">Der Erfolg von TransFair Campus basiert auf der Zusammenarbeit engagierter Partner aus Wissenschaft und Wirtschaft.</p>
+                </div>
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                    <div class="p-6 bg-primary rounded-lg shadow-sm card">
+                        <h3 class="font-bold text-xl text-accent mb-2">Projektleitung</h3>
+                        <p class="text-gray-700 mt-2">IY</p>
+                    </div>
+                     <div class="p-6 bg-primary rounded-lg shadow-sm card">
+                        <h3 class="font-bold text-xl text-accent mb-2">Fachliche Begleitung</h3>
+                        <p class="text-gray-700 mt-2">IX</p>
+                    </div>
+                     <div class="p-6 bg-primary rounded-lg shadow-sm card">
+                        <h3 class="font-bold text-xl text-accent mb-2">Unternehmenspartner</h3>
+                        <p class="text-gray-700 mt-2">Regionale und bundesweite Unternehmen</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="press-release" class="bg-primary">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-3xl md:text-4xl font-bold text-accent mb-8">Pressemitteilung</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-gray-600 text-lg mb-8">Lesen Sie unseren aktuellen Zeitungsartikel über das dreijährige Jubiläum und den Erfolg von TransFair Campus.</p>
+                <button id="openPressReleaseModal" class="btn-primary font-semibold py-3 px-8 rounded-full">
+                    Pressemitteilung anzeigen
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-accent text-white">
+        <div class="container mx-auto px-6 py-12 text-center">
+            <h3 class="text-3xl font-bold mb-4">Werden Sie Teil von TransFair Campus.</h3>
+            <p class="text-lg mb-8">Kontaktieren Sie uns, um Partner zu werden oder mehr über das Projekt zu erfahren.</p>
+            <a href="mailto:info@transfair-campus.de" class="inline-block btn-primary font-semibold py-3 px-8 rounded-full">Kontakt aufnehmen</a>
+            <p class="mt-12 text-sm text-gray-400">&copy; 2025 TransFair Campus Initiative. Alle Rechte vorbehalten.</p>
+        </div>
+    </footer>
+
+    <!-- Press Release Modal -->
+    <div id="pressReleaseModal" class="modal-overlay">
+        <div class="modal-content">
+            <button id="closePressReleaseModal" class="modal-close-button">&times;</button>
+            <div class="newspaper-modal-content">
+                <div class="masthead">Die Honnefer Rundschau</div>
+                <div class="dateline">15. Juli 2028 | BAD HONNEF.</div>
+
+                <h1 class="article-title">TransFair: Drei Jahre Brückenbau – Deutschlands IT-Zukunft gesichert!</h1>
+                <p class="article-subtitle">Das IY Projekt revolutioniert die Fachkräfteintegration.</p>
+
+                <p class="lead-paragraph">
+                    TransFair – Praxisintegration internationaler IT-Talente feiert sein dreijähriges Bestehen mit beeindruckendem Erfolg. Das Programm hat Hunderten internationaler Studierender den Weg in den deutschen Arbeitsmarkt geebnet und die Wettbewerbsfähigkeit von Unternehmen gestärkt.
+                </p>
+
+                <div class="article-body">
+                    <h3>Vom Pilotprojekt zur Erfolgsgeschichte</h3>
+                    <p>
+                        Gestartet 2025, adressierte TransFair die Herausforderung, internationale IT-Talente trotz hoher Nachfrage erfolgreich in den deutschen Arbeitsmarkt zu integrieren. Fehlende Praxiserfahrung und Netzwerke waren oft Hürden. Das Programm schuf durch Mentoring, Praxisformate und reale Unternehmensprojekte eine einzigartige Brücke.
+                    </p>
+                    <div class="quote">
+                        "Als wir starteten, war es ein Experiment. Heute ist TransFair ein unverzichtbarer Bestandteil unserer Strategie zur Fachkräftesicherung."
+                        <br>– Prof. Dr. Anna Musterfrau, Präsidentin der IY.
+                    </div>
+                    <p>
+                        Prof. Dr. Anna Musterfrau, Präsidentin der IY, bestätigt: "Über 85% unserer TransFair-Absolvent:innen finden innerhalb von sechs Monaten eine adäquate Anstellung in Deutschland. Ein phänomenaler Erfolg."
+                    </p>
+
+                    <h3>Ein Gewinn für alle Seiten</h3>
+                    <p>
+                        Der Erfolg ist vielschichtig:
+                    </p>
+                    <ul>
+                        <li><strong>Für Talente:</strong> Fachliche Expertise, Soft Skills, interkulturelle Kompetenzen und ein starkes Netzwerk.</li>
+                    </ul>
+                    <div class="quote">
+                        "Ohne TransFair hätte ich den Einstieg nie so reibungslos geschafft. Die Mini-Projekte und das Mentoring waren Gold wert."
+                        <br>– Priya Sharma, IT-Spezialistin aus Indien.
+                    </div>
+                    <ul>
+                        <li><strong>Für Unternehmen:</strong> Direkter Zugang zu hochmotivierten, qualifizierten Nachwuchskräften mit frischen, internationalen Perspektiven und neuen Ideen.</li>
+                    </ul>
+                    <div class="quote">
+                        "Wir haben über TransFair bereits mehrere herausragende Talente eingestellt, die perfekt in unsere Teams passen."
+                        <br>– Markus Muster, HR-Leiter Tech-Unternehmen.
+                    </div>
+                    <ul>
+                        <li><strong>Für Deutschland:</strong> Stärkt die Attraktivität als Studien- und Arbeitsstandort für MINT-Talente.</li>
+                    </ul>
+
+                    <h3>Innovation und Skalierbarkeit mit dem IX</h3>
+                    <p>
+                        Der ganzheitliche und dynamische Ansatz von TransFair hat ein selbsttragendes Ökosystem geschaffen. Die studentische Unternehmensberatung ist Realität und betreut erfolgreich Kundenprojekte.
+                    </p>
+                    <p>
+                        Das IX ist ein strategischer Partner, der TransFair wissenschaftlich fundiert begleitet und dessen positive makroökonomische Effekte fortlaufend analysiert und bestätigt. "Die Skalierbarkeit des Modells ist enorm", betont Dr. Lena Mustermann vom IX. "Wir sehen großes Potenzial, TransFair auf andere Fachbereiche und weitere Hochschulstandorte auszuweiten, um den Effekt auf die Fachkräftesicherung zu multiplizieren."
+                    </p>
+
+                    <h3>Der Blick nach vorn</h3>
+                    <p>
+                        Mit dem dreijährigen Jubiläum blickt TransFair optimistisch in die Zukunft. Die Partnerschaften mit Unternehmen und Institutionen werden weiter vertieft, und das Programm soll kontinuierlich an die sich wandelnden Bedarfe des Arbeitsmarktes angepasst werden. TransFair ist mehr als ein Projekt – es ist ein Modell für eine erfolgreiche Integration und eine Investition in die digitale Zukunft Deutschlands.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Hamburger menu toggle
+        const hamburgerMenuButton = document.getElementById('hamburger-menu-button');
+        const slideOutNavDrawer = document.getElementById('slide-out-nav-drawer');
+        const backdropOverlay = document.getElementById('backdrop-overlay'); // Get the backdrop
+        const closeNavDrawerBtn = document.getElementById('close-nav-drawer-btn');
+        const navLinksOverlay = document.querySelectorAll('.nav-link-overlay');
+
+        hamburgerMenuButton.addEventListener('click', () => {
+            slideOutNavDrawer.classList.add('open');
+            backdropOverlay.classList.add('open'); // Open the backdrop
+            document.body.classList.add('menu-open'); // Add class to body for blur and overflow
+        });
+
+        const closeMenu = () => {
+            slideOutNavDrawer.classList.remove('open');
+            backdropOverlay.classList.remove('open'); // Close the backdrop
+            document.body.classList.remove('menu-open'); // Remove class from body
+        };
+
+        closeNavDrawerBtn.addEventListener('click', closeMenu);
+
+        // Close overlay when a navigation link is clicked
+        navLinksOverlay.forEach(link => {
+            link.addEventListener('click', closeMenu);
+        });
+
+        // Close menu when clicking on the backdrop overlay
+        backdropOverlay.addEventListener('click', closeMenu);
+
+        // Solution card details toggle
+        const solutionCards = document.querySelectorAll('.solution-card');
+        solutionCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const details = card.querySelector('.solution-details');
+                details.classList.toggle('hidden');
+                card.classList.toggle('bg-blue-50'); // Light accent background on click
+            });
+        });
+
+        // Highlight active navigation link on scroll (for overlay links)
+        const sections = document.querySelectorAll('section');
+        
+        window.onscroll = () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                // Adjust offset to trigger active state slightly before section reaches top
+                if (pageYOffset >= sectionTop - 100) { 
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinksOverlay.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        };
+
+        // Chart.js data and configuration for Success Dashboard
+        const ctx = document.getElementById('successChart').getContext('2d');
+        const dataParticipants = {
+            labels: ['Studierende', 'Mentor:innen', 'Unternehmen'],
+            datasets: [{
+                label: 'Zielvorgabe',
+                data: [60, 20, 15],
+                backgroundColor: 'rgba(44, 62, 80, 0.2)', /* Dunkles Marineblau, transparent */
+                borderColor: 'rgba(44, 62, 80, 1)',
+                borderWidth: 1
+            }, {
+                label: 'Erreicht (Prognose)',
+                data: [45, 15, 10],
+                backgroundColor: 'rgba(52, 152, 219, 0.7)', /* Helles Blau, transparenter */
+                borderColor: 'rgba(52, 152, 219, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        const dataProjects = {
+            labels: ['Challenges', 'Praxisprojekte', 'Absolventen-Übergänge'],
+            datasets: [{
+                label: 'Zielvorgabe',
+                data: [12, 8, 25],
+                backgroundColor: 'rgba(44, 62, 80, 0.2)',
+                borderColor: 'rgba(44, 62, 80, 1)',
+                borderWidth: 1
+            }, {
+                label: 'Erreicht (Prognose)',
+                data: [5, 4, 10],
+                backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                borderColor: 'rgba(52, 152, 219, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        const config = {
+            type: 'bar',
+            data: dataParticipants, // Default data
+            options: {
+                responsive: true,
+                maintainAspectRatio: false, // Important for responsive charts in flex/grid containers
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: '#495057' /* Dunkles Grau für Achsenbeschriftung */
+                        },
+                        grid: {
+                            color: '#E9ECEF' /* Sehr helles Grau für Gitternetzlinien */
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: '#495057'
+                        },
+                        grid: {
+                            color: '#E9ECEF'
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Teilnehmendenzahlen (Pilotphase)',
+                        font: { size: 18, weight: 'bold', color: '#343A40' }
+                    },
+                    legend: {
+                        labels: {
+                            color: '#495057'
+                        }
+                    },
+                    tooltip: {
+                         callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += context.parsed.y;
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        const successChart = new Chart(ctx, config);
+
+        // Chart filter buttons logic
+        const btnParticipants = document.getElementById('btnParticipants');
+        const btnProjects = document.getElementById('btnProjects');
+        const chartFilterButtons = document.querySelectorAll('.btn-chart-filter');
+        
+        function updateChart(data, title) {
+            successChart.data = data;
+            successChart.options.plugins.title.text = title;
+            successChart.update();
+        }
+
+        btnParticipants.addEventListener('click', () => {
+            updateChart(dataParticipants, 'Teilnehmendenzahlen (Pilotphase)');
+            chartFilterButtons.forEach(btn => {
+                btn.classList.remove('active', 'bg-blue-100', 'text-blue-700');
+                btn.classList.add('bg-gray-200', 'text-gray-700');
+            });
+            btnParticipants.classList.add('active', 'bg-blue-100', 'text-blue-700');
+        });
+
+        btnProjects.addEventListener('click', () => {
+            updateChart(dataProjects, 'Projekt-Ergebnisse (Pilotphase)');
+            chartFilterButtons.forEach(btn => {
+                btn.classList.remove('active', 'bg-blue-100', 'text-blue-700');
+                btn.classList.add('bg-gray-200', 'text-gray-700');
+            });
+            btnProjects.classList.add('active', 'bg-blue-100', 'text-blue-700');
+        });
+
+        // Modal Logic for Press Release
+        const openPressReleaseModalBtn = document.getElementById('openPressReleaseModal');
+        const pressReleaseModal = document.getElementById('pressReleaseModal');
+        const closePressReleaseModalBtn = document.getElementById('closePressReleaseModal');
+
+        openPressReleaseModalBtn.addEventListener('click', () => {
+            pressReleaseModal.classList.add('open');
+            document.body.style.overflow = 'hidden'; // Disable background scrolling
+        });
+
+        closePressReleaseModalBtn.addEventListener('click', () => {
+            pressReleaseModal.classList.remove('open');
+            document.body.style.overflow = ''; // Enable background scrolling
+        });
+
+        // Close modal when clicking outside content
+        pressReleaseModal.addEventListener('click', (e) => {
+            if (e.target === pressReleaseModal) {
+                pressReleaseModal.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+        });
+
+        // Dynamic Counter Animation
+        const impactNumbersSection = document.getElementById('impact-numbers'); // Target the whole section
+        const counters = document.querySelectorAll('.impact-number');
+        let countersAnimated = false; // Flag to ensure animation runs only once
+
+        const animateCounter = (element, target) => {
+            const duration = 2000; // 2 seconds
+            const start = 0;
+            let startTime = null;
+
+            const step = (currentTime) => {
+                if (!startTime) startTime = currentTime;
+                const progress = Math.min((currentTime - startTime) / duration, 1);
+                element.textContent = Math.floor(progress * target);
+
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                }
+            };
+
+            requestAnimationFrame(step);
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !countersAnimated) {
+                    counters.forEach(counter => {
+                        const target = parseInt(counter.dataset.target);
+                        animateCounter(counter, target);
+                    });
+                    countersAnimated = true; // Set flag to true after animation
+                    observer.unobserve(entry.target); // Stop observing after animation
+                }
+            });
+        }, { threshold: 0.5 }); // Trigger when 50% of the section is visible
+
+        if (impactNumbersSection) {
+            observer.observe(impactNumbersSection);
+        }
+    </script>
+</body>
+</html>
